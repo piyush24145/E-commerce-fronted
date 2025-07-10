@@ -4,6 +4,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { baseUrl } from "../../../environment";
 
+
+const baseUrl = process.env.REACT_APP_API_BASE_URL;
+
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 export default function Checkout() {
