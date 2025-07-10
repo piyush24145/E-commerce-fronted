@@ -4,7 +4,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { baseUrl } from "../../../environment";
 
-const stripePromise = loadStripe("pk_test_51RcPdGGd8yfmOEEK0l9c8eBdLAQCkERmaTRWsk3t7lZAp49AcyYmyXmDld9pKp56eNIQGGJdFaeONkWnOxMHOqSy00c9Ji2AfQ"); // Replace with your real key
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 export default function Checkout() {
   const [clientSecret, setClientSecret] = useState(null);
