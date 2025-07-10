@@ -12,7 +12,7 @@ export default function Checkout() {
   useEffect(() => {
     const fetchClientSecret = async () => {
       try {
-        const res = await axios.post(`${baseUrl}/payment/session-create`, {}, {
+        const res = await axios.post('https://e-commerce-backend-mxhd.onrender.com/payment/session-create', {}, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
