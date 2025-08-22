@@ -115,8 +115,6 @@ export default function ProductForm({
       setTimeout(() => setMessage(''), 3000);
     }
   };
-
-
   return (
     <motion.form
       initial={{ opacity: 0, y: -20 }}

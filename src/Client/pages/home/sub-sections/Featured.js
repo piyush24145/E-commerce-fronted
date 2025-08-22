@@ -42,7 +42,7 @@ export default function FeaturedCarousel() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(0,0,0,0.05),transparent_70%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.04),transparent_70%)]" />
       
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-        <h2 className="text-center text-base font-semibold text-indigo-600 dark:text-indigo-400">
+        <h2 className="text-center text-2xl font-semibold text-indigo-600 dark:text-indigo-400">
           Featured Products
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-center text-4xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-5xl">

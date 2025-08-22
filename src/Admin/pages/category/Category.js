@@ -6,8 +6,6 @@ import axios from "axios";
 import Alert from "../../../basicUtilityComponenets/alert/Alert";
 import { baseUrl } from "../../../environment";
 
-
-
 export default function Category() {
   const [categories, setCategories] = useState([]);
   const [formOpen, setFormOpen] = useState(false);
@@ -37,10 +35,6 @@ Formik.setFieldValue("description",selectedCategory[0].description)
 
     }
   }
-
-
-
-
   const Formik = useFormik({
     initialValues: { name: "", description: "" },
     validationSchema: categorySchema,

@@ -1,41 +1,42 @@
 // src/components/Hero.js
-import { useRef, useState } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/autoplay';
+import { useRef, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/autoplay";
 
-import { PlayIcon, PauseIcon } from '@heroicons/react/24/solid';
+import { PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
+import { useNavigate } from "react-router-dom"; 
 
 const slides = [
   {
-    image: 'https://www.shutterstock.com/shutterstock/photos/2504555377/display_1500/stock-photo-rear-view-of-happy-indian-young-woman-in-wireless-headphones-dancing-listening-favorite-energetic-2504555377.jpg',
-    title: 'Build an elite collection',
-    description: 'Choose your next adventure from thousands of finds.',
-    button: 'Start your journey',
-    tag: 'Lego',
+    image: "/Untitled_design_8_6aa975e1-d185-4629-9d4a-a40d55aedb48.png",
+    title: "Effortlessly Stylish",
+    description: "Don't miss out on our hottest discounts for the hottest season!",
+    button: "Shop Now",
+    category: "shirt", 
   },
   {
-    image: 'https://media.gettyimages.com/id/637945020/photo/woman-running-with-shopping-cart-in-supermarket-produce-aisle.jpg?s=612x612&w=gi&k=20&c=RY4U3sAhHzY684lTvRBcI2EeEtW30rWRuKw0lX9xpTU=',
-    title: 'Collect Rare Coins',
-    description: 'Explore historic treasures and unique currencies.',
-    button: 'Start your journey',
-    tag: 'Coins',
+    image: "/summercamp.png",
+    title: "summer special",
+    description: "Nothing does laid-back cool like streetwear fashion",
+    button: "Explore Now",
+    category: "cap",
   },
   {
-    image: 'https://framerusercontent.com/images/inF3xDJJojLEbyCQ5fqIi38cGY.png',
-    title: 'Comic Book Legends',
-    description: 'Find your favorite heroes and vintage stories.',
-    button: 'Start your journey',
-    tag: 'Comic books',
+    image: "/84770f_0d208e6107cc4d64a2fd2d910a578fb2~mv2.avif",
+    title: "BLUSH & LUSH",
+    description: "Find your favorite heroes and vintage stories.",
+    button: "Discover",
+    category: "comics",
   },
 ];
 
 export default function Hero() {
   const swiperRef = useRef(null);
   const [playing, setPlaying] = useState(true);
-
+  const navigate = useNavigate(); // 
   const togglePlay = () => {
     if (!swiperRef.current) return;
     if (playing) swiperRef.current.autoplay.stop();
@@ -44,11 +45,11 @@ export default function Hero() {
   };
 
   return (
-    <div className="relative w-full h-[85vh] bg-gray-200 flex items-center justify-center overflow-hidden">
+    <div className="relative w-full h-[100vh] flex items-center justify-center overflow-hidden">
       {/* Play / Pause Button */}
       <button
         onClick={togglePlay}
-        className="z-10 absolute bottom-5 right-5 bg-white text-black rounded-full p-3 shadow hover:scale-110 transition"
+        className="z-20 absolute bottom-5 right-5 bg-white/80 text-black rounded-full p-3 shadow-lg hover:scale-110 transition"
       >
         {playing ? (
           <PauseIcon className="w-6 h-6" />
@@ -57,7 +58,7 @@ export default function Hero() {
         )}
       </button>
 
-      {/* Swiper */}
+     
       <Swiper
         modules={[Navigation, Autoplay]}
         onSwiper={(s) => (swiperRef.current = s)}
@@ -67,25 +68,27 @@ export default function Hero() {
       >
         {slides.map((slide, index) => (
           <SwiperSlide key={index}>
-            <div className="max-w-7xl mx-auto h-full px-5 py-10 grid grid-cols-1 md:grid-cols-2 items-center">
-              {/* Text Section */}
-              <div className="text-left space-y-4">
-                <h2 className="text-4xl md:text-5xl font-bold text-[#4E1609]">
+            <div
+              className="w-full h-full bg-cover bg-center relative"
+              style={{ backgroundImage: `url(${slide.image})` }}
+            >
+             
+              <div className="absolute inset-0 bg-black/40"></div>
+
+            
+              <div className="relative z-10 max-w-4xl px-6 md:px-12 h-full flex flex-col justify-center text-left">
+                <h2 className="text-5xl md:text-7xl font-extrabold text-white leading-tight drop-shadow-lg">
                   {slide.title}
                 </h2>
-                <p className="text-[#6E2C13] text-lg">{slide.description}</p>
-                <button className="bg-[#4E1609] text-white px-6 py-2 rounded-full hover:brightness-110 transition">
+                <p className="text-lg md:text-2xl text-orange-300 mt-4 drop-shadow">
+                  {slide.description}
+                </p>
+                <button
+                  onClick={() => navigate(`/products?category=${slide.category}`)} 
+                  className="mt-6 bg-gray-500 text-black px-8 py-3 rounded-full text-lg font-semibold shadow hover:scale-105 transition"
+                >
                   {slide.button}
                 </button>
-              </div>
-
-              {/* Image Section */}
-              <div className="flex justify-center">
-                <img
-                  src={slide.image}
-                  alt={slide.tag}
-                  className="h-60 md:h-72 rounded-xl shadow-lg"
-                />
               </div>
             </div>
           </SwiperSlide>
