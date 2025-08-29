@@ -6,6 +6,7 @@ import Alert from '../../../basicUtilityComponenets/alert/Alert';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { login } from '../../../state/authSlice';
+import { baseUrl } from "../../../environment.js";
 
 export default function Login() {
   const [message, setMessage] = useState('');
@@ -35,7 +36,7 @@ export default function Login() {
     validationSchema: loginSchema,
     onSubmit: async (values) => {
       try {
-        const response = await axios.post("http://localhost:5000/user/login", values);
+        const response = await axios.post(`${baseUrl}/user/login`, values);
 
         // ✅ Store userData and token
         localStorage.setItem("userData", JSON.stringify(response.data.userData));

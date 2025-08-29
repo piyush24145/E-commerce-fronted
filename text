@@ -60,7 +60,7 @@ Formik.setFieldValue("description",selectedColor[0].description)
       }
       else{
           axios
-        .post("http://localhost:5000/color/create", { ...values })
+        .post(`${baseUrl}/color/create`, { ...values })
         .then((resp) => {
           setMessage("Color created successfully");
           setMessageType("success");
@@ -79,7 +79,7 @@ Formik.setFieldValue("description",selectedColor[0].description)
 
   const fetchColors = () => {
     axios
-      .get("http://localhost:5000/color")
+      .get(`${baseUrl}/color`)
       .then((resp) => {
         setColor(resp.data.colors);
       })

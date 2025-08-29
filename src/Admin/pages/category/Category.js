@@ -54,7 +54,7 @@ Formik.setFieldValue("description",selectedCategory[0].description)
       else{
 
   axios
-        .post("http://localhost:5000/category/create", { ...values })
+        .post(`${baseUrl}/category/create`, { ...values })
         .then((resp) => {
           setMessage("Category created successfully");
           setMessageType("success");
@@ -73,7 +73,7 @@ Formik.setFieldValue("description",selectedCategory[0].description)
 
   const fetchCategories = () => {
     axios
-      .get("http://localhost:5000/category")
+      .get(`${baseUrl}/category`)
       .then((resp) => {
         setCategories(resp.data.categories);
       })

@@ -1,9 +1,10 @@
+import { baseUrl } from "../../../../environment";
 export default function ProductCardAdmin({ product, handleEditForm ,handleDeleteForm }) {
   return (
     <div className="group relative rounded-xl shadow-md bg-white p-4 hover:shadow-xl transition-all duration-300 ease-in-out">
       {product.images?.length > 0 ? (
         <img
-          src={`http://localhost:5000/uploads/${product.images[0]}`}
+          src={`${baseUrl}/uploads/${product.images[0]}`}
           alt={product.title}
           className="w-full h-60 object-cover rounded-md mb-4"
         />

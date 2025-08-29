@@ -56,7 +56,7 @@ export default function ProductCard({ product }) {
       <img
         src={
           product.images?.length > 0
-            ? `http://localhost:5000/uploads/${product.images[0]}`
+            ? `${baseUrl}/uploads/${product.images[0]}`
             : "https://placehold.co/300x300?text=No+Image"
         }
         alt={product.title}

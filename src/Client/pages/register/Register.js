@@ -3,6 +3,7 @@ import { registerSchema } from '../../../yupSchema/registerSchema';
 import axios from "axios";
 import { useEffect, useState } from 'react';
 import Alert from '../../../basicUtilityComponenets/alert/Alert';
+import { baseUrl } from "../../../environment.js";
 
 export default function Register() {
   const [message, setMessage] = useState('');
@@ -28,7 +29,7 @@ export default function Register() {
     validationSchema: registerSchema,
     onSubmit: (values) => {
       console.log("register formik submit", values);
-      axios.post("http://localhost:5000/user/register", { ...values })
+      axios.post(`${baseUrl}/user/register`, { ...values })
         .then(response => {
           console.log("Response register", response);
           setMessage(response.data.message);

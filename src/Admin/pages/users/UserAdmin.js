@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Alert from "../../../basicUtilityComponenets/alert/Alert";
+import { baseUrl } from "../../../environment.js";
 
 export default function UserAdmin() {
   const [users, setUsers] = useState([]);
@@ -14,7 +15,7 @@ export default function UserAdmin() {
 
   const fetchUsers = () => {
     axios
-      .get("http://localhost:5000/user")
+      .get(`${baseUrl}/user`)
       .then((resp) => {
         setUsers(resp.data.users);
       })
@@ -26,7 +27,7 @@ export default function UserAdmin() {
   const handleUserDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       axios
-        .delete(`http://localhost:5000/user/${id}`)
+        .delete(`${baseUrl}/user/${id}`)
         .then((resp) => {
           setMessage(resp.data.message);
           setMessageType("success");
