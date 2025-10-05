@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+// src/Admin/pages/products/ProductsAdmin.jsx
+import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { baseUrl } from '../../../environment';
 import ProductCardAdmin from './sub-components/ProductCardAdmin';
@@ -15,7 +16,8 @@ export default function ProductsAdmin() {
   const [formOpen, setFormOpen] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
 
-  const fetchProducts = async () => {
+  // Products fetch with filters (useCallback so effect lint is happy)
+  const fetchProducts = useCallback(async () => {
     try {
       const params = new URLSearchParams();
       selectedColors.forEach((c) => params.append('color', c));
@@ -23,12 +25,13 @@ export default function ProductsAdmin() {
       if (searchQuery.trim()) params.append('search', searchQuery.trim());
 
       const res = await axios.get(`${baseUrl}/products?${params.toString()}`);
-      setProducts(res.data.products);
+      setProducts(res.data.products || []);
     } catch (err) {
       console.error('❌ Error fetching products:', err);
     }
-  };
+  }, [selectedColors, selectedCategories, searchQuery]);
 
+  // Fetch Colors
   const fetchColors = async () => {
     try {
       const res = await axios.get(`${baseUrl}/color`);
@@ -38,6 +41,7 @@ export default function ProductsAdmin() {
     }
   };
 
+  // Fetch Categories
   const fetchCategories = async () => {
     try {
       const res = await axios.get(`${baseUrl}/category`);
@@ -47,6 +51,7 @@ export default function ProductsAdmin() {
     }
   };
 
+  // Filter handler
   const handleFilterChange = (type, value) => {
     const toggle = (prev) =>
       prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value];
@@ -55,6 +60,7 @@ export default function ProductsAdmin() {
     else if (type === 'category') setSelectedCategories(toggle);
   };
 
+  // Edit product
   const handleEditForm = (id) => {
     const prod = products.find((p) => p._id === id);
     if (prod) {
@@ -63,23 +69,22 @@ export default function ProductsAdmin() {
     }
   };
 
+  // Create product
   const handleCreate = () => {
     setEditProduct(null);
     setFormOpen(true);
   };
 
-  // ✅ Delete product logic added here
+  // Delete product
   const handleDeleteForm = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this product?");
     if (!confirmDelete) return;
 
     try {
       await axios.delete(`${baseUrl}/products/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      fetchProducts(); // Refresh product list
+      fetchProducts();
     } catch (err) {
       console.error("❌ Failed to delete product:", err);
     }
@@ -90,9 +95,10 @@ export default function ProductsAdmin() {
     fetchCategories();
   }, []);
 
+  // fetchProducts whenever dependencies change (fetchProducts is stable via useCallback)
   useEffect(() => {
     fetchProducts();
-  }, [selectedColors, selectedCategories, searchQuery]);
+  }, [fetchProducts]);
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -106,7 +112,6 @@ export default function ProductsAdmin() {
         </button>
       </div>
 
-      {/* Search */}
       <input
         type="text"
         placeholder="Search products..."
@@ -115,7 +120,6 @@ export default function ProductsAdmin() {
         className="mb-6 block w-full rounded-md border px-4 py-2"
       />
 
-      {/* Filters */}
       <div className="flex flex-wrap gap-10 mb-8">
         <div>
           <label className="font-semibold text-sm block mb-1">Filter by Color</label>
@@ -150,7 +154,6 @@ export default function ProductsAdmin() {
         </div>
       </div>
 
-      {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.length > 0 ? (
           products.map((product) => (
@@ -158,7 +161,7 @@ export default function ProductsAdmin() {
               key={product._id}
               product={product}
               handleEditForm={handleEditForm}
-              handleDeleteForm={handleDeleteForm} // ✅ use correct handler
+              handleDeleteForm={handleDeleteForm}
             />
           ))
         ) : (
@@ -166,7 +169,6 @@ export default function ProductsAdmin() {
         )}
       </div>
 
-      {/* Form Modal */}
       {formOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-xl w-full max-w-3xl max-h-[85vh] overflow-y-auto relative">

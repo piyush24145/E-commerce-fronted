@@ -56,7 +56,7 @@ export default function ProductCard({ product }) {
       <img
         src={
           product.images?.length > 0
-            ? `${baseUrl}/uploads/${product.images[0]}`
+            ? product.images[0]   // ✅ Cloudinary image direct use
             : "https://placehold.co/300x300?text=No+Image"
         }
         alt={product.title}

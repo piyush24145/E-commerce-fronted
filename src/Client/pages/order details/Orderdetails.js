@@ -65,7 +65,7 @@ export default function OrderDetails() {
             const product = item.product;
             const imageUrl =
               product?.images?.length > 0
-                ? `${baseUrl}/uploads/${product.images[0]}`
+                ? product.images[0]
                 : "https://placehold.co/300x300?text=No+Image";
 
             return (

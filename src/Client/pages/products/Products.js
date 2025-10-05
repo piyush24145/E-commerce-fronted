@@ -24,7 +24,16 @@ export default function Products() {
       if (searchQuery.trim()) params.append('search', searchQuery.trim());
 
       const res = await axios.get(`${baseUrl}/products?${params.toString()}`);
-      setProducts(res.data.products);
+
+      // ✅ Cloudinary URLs handle
+      const updatedProducts = res.data.products.map((p) => ({
+        ...p,
+        images: p.images?.map((img) =>
+          img.startsWith('http') ? img : `${baseUrl}/${img}`
+        ) || [],
+      }));
+
+      setProducts(updatedProducts);
     } catch (err) {
       console.error('❌ Error fetching products:', err);
     }

@@ -92,7 +92,7 @@ export default function FeaturedCarousel() {
                     <img
                       src={
                         product.images?.[0]
-                          ? `${baseUrl}/uploads/${product.images[0]}`
+                          ? product.images[0]
                           : "https://placehold.co/300x300?text=No+Image"
                       }
                       alt={product.title}

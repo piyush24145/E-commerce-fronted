@@ -33,14 +33,15 @@ export default function ProductDetails() {
       <div className="flex md:flex-col gap-4">
         {product.images?.map((img, idx) => (
           <img
-            key={idx}
-            src={`${baseUrl}/uploads/${img}`}
-            onClick={() => setSelectedImage(img)}
-            className={`w-16 h-16 object-cover border rounded cursor-pointer ${
-              selectedImage === img ? "ring-2 ring-indigo-500" : ""
-            }`}
-            alt="thumbnail"
-          />
+  key={idx}
+  src={img} // ✅ direct Cloudinary URL
+  onClick={() => setSelectedImage(img)}
+  className={`w-16 h-16 object-cover border rounded cursor-pointer ${
+    selectedImage === img ? "ring-2 ring-indigo-500" : ""
+  }`}
+  alt="thumbnail"
+/>
+
         ))}
       </div>
 
@@ -51,19 +52,20 @@ export default function ProductDetails() {
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
       >
-        <img
-          src={`${baseUrl}/uploads/${selectedImage}`}
-          alt="Selected"
-          className="w-full h-[400px] object-contain"
-        />
+<img
+  src={selectedImage || "https://placehold.co/400x400?text=No+Image"}
+  alt="Selected"
+  className="w-full h-[400px] object-contain"
+/>
+
       </div>
 
       {/* Zoom View */}
      {isHovering && (
   <div className="hidden md:block w-100 h-[600px] relative">
     <div className="rounded-lg shadow-xl border border-gray-200 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900">
-     <img
-  src={`${baseUrl}/uploads/${selectedImage}`}
+    <img
+  src={selectedImage || "https://placehold.co/400x400?text=No+Image"}
   alt="Zoomed View"
   className="absolute transition-all duration-100 ease-out"
   style={{

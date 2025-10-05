@@ -96,14 +96,14 @@ export default function Cart() {
                 <td align="center">{item.product.title}</td>
                 <td align="center">
                   <img
-                    className="h-32 object-contain"
-                    src={
-                      item.product.images && item.product.images.length > 0
-                        ? `${baseUrl}/uploads/${item.product.images[0]}`
-                        : "https://placehold.co/300x300?text=No+Image"
-                    }
-                    alt={item.product.title}
-                  />
+  className="h-32 object-contain"
+  src={
+    item.product.images && item.product.images.length > 0
+      ? item.product.images[0]   // ✅ direct Cloudinary URL
+      : "https://placehold.co/300x300?text=No+Image"
+  }
+  alt={item.product.title}
+/>
                 </td>
                 <td align="center">
                   <div className="flex items-center justify-center gap-2">
