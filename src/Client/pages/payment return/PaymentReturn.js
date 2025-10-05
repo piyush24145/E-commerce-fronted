@@ -1,3 +1,4 @@
+// src/pages/payment/PaymentReturn.jsx
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { baseUrl } from "../../../environment";
@@ -25,10 +26,12 @@ export default function PaymentReturn() {
         },
       })
       .then((res) => {
-        setStatus(res.data.status);
-        setEmail(res.data.customer_email);
+        const { status, customer_email } = res.data;
+        setStatus(status);
+        setEmail(customer_email);
 
-        if (res.data.status === "paid") {
+        if (status === "paid") {
+          // Cart clear
           dispatch(setCartItems([]));
           dispatch(setCartCount(0));
         }
@@ -37,7 +40,7 @@ export default function PaymentReturn() {
         console.error("❌ Error fetching session status:", err);
         setStatus("failed");
       });
-  }, []);
+  }, [dispatch]);
 
   if (status === "open") return <Navigate to="/checkout" />;
   if (status === "failed") {
