@@ -1,4 +1,3 @@
-// src/pages/payment/PaymentReturn.jsx
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { baseUrl } from "../../../environment";
@@ -13,17 +12,13 @@ export default function PaymentReturn() {
 
   useEffect(() => {
     const sessionId = new URLSearchParams(window.location.search).get("session_id");
+    if (!sessionId) return setStatus("failed");
 
-    if (!sessionId) {
-      setStatus("failed");
-      return;
-    }
+    const token = localStorage.getItem("token");
 
     axios
       .get(`${baseUrl}/payment/session-status?session_id=${sessionId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       })
       .then((res) => {
         const { status, customer_email } = res.data;
@@ -31,7 +26,6 @@ export default function PaymentReturn() {
         setEmail(customer_email);
 
         if (status === "paid") {
-          // Cart clear
           dispatch(setCartItems([]));
           dispatch(setCartCount(0));
         }
@@ -43,16 +37,15 @@ export default function PaymentReturn() {
   }, [dispatch]);
 
   if (status === "open") return <Navigate to="/checkout" />;
-  if (status === "failed") {
+  if (status === "failed")
     return (
       <div className="h-screen flex items-center justify-center flex-col gap-4">
         <h2 className="text-red-600 text-xl font-semibold">❌ Payment Failed</h2>
         <a href="/cart" className="text-blue-600 underline">Try Again</a>
       </div>
     );
-  }
 
-  if (status === "paid") {
+  if (status === "paid")
     return (
       <div className="h-screen flex items-center justify-center flex-col gap-4">
         <h2 className="text-green-600 text-xl font-semibold">✅ Payment Successful</h2>
@@ -61,11 +54,6 @@ export default function PaymentReturn() {
         <a href="/orders" className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">View Orders</a>
       </div>
     );
-  }
 
-  return (
-    <div className="h-screen flex items-center justify-center text-lg font-medium">
-      Verifying your payment...
-    </div>
-  );
+  return <div className="h-screen flex items-center justify-center text-lg font-medium">Verifying your payment...</div>;
 }
