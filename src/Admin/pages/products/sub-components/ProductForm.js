@@ -1,9 +1,9 @@
-import { useFormik } from 'formik';
-import { productSchema } from '../../../../yupSchema/productSchema';
-import axios from 'axios';
-import { baseUrl } from '../../../../environment';
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useFormik } from "formik";
+import { productSchema } from "../../../../yupSchema/productSchema";
+import axios from "axios";
+import { baseUrl } from "../../../../environment";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ProductForm({
   editProduct,
@@ -13,7 +13,7 @@ export default function ProductForm({
   fetchProducts,
 }) {
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
@@ -34,49 +34,51 @@ export default function ProductForm({
 
   const formik = useFormik({
     initialValues: {
-      title: editProduct?.title || '',
-      description: editProduct?.description || '',
-      short_des: editProduct?.short_des || '',
-      price: editProduct?.price || '',
-      stock: editProduct?.stock || '',
-      category: editProduct?.category?._id || '',
-      color: editProduct?.color?._id || '',
+      title: editProduct?.title || "",
+      description: editProduct?.description || "",
+      short_des: editProduct?.short_des || "",
+      price: editProduct?.price || "",
+      stock: editProduct?.stock || "",
+      category: editProduct?.category?._id || "",
+      color: editProduct?.color?._id || "",
     },
     enableReinitialize: true,
     validationSchema: productSchema,
-
     onSubmit: async (values, { resetForm }) => {
       setLoading(true);
-      setMessage('');
+      setMessage("");
 
       try {
         const formData = new FormData();
 
-        // 1️⃣ append form values
+        // Append all form values
         Object.entries(values).forEach(([key, value]) => {
           formData.append(key, value);
         });
 
-        // 2️⃣ append existing images if in edit mode
+        // Append existing images (EDIT mode only)
         if (isEditMode && existingImages.length > 0) {
-          formData.append('existingImages', JSON.stringify(existingImages));
+          formData.append("existingImages", JSON.stringify(existingImages));
         }
 
-        // 3️⃣ append new images
-        imageFiles.forEach(file => formData.append('images', file));
+        // Append new image files
+        imageFiles.forEach((file) => {
+          formData.append("images", file);
+        });
 
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
 
         const url = isEditMode
           ? `${baseUrl}/products/${editProduct._id}`
           : `${baseUrl}/products/create`;
 
         await axios({
-          method: isEditMode ? 'put' : 'post',
+          method: isEditMode ? "put" : "post",
           url,
           data: formData,
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
           },
         });
 
@@ -84,8 +86,8 @@ export default function ProductForm({
 
         setMessage(
           isEditMode
-            ? '✅ Product updated successfully!'
-            : '✅ Product created successfully!'
+            ? "✅ Product updated successfully!"
+            : "✅ Product created successfully!"
         );
 
         resetForm();
@@ -96,42 +98,44 @@ export default function ProductForm({
         setTimeout(() => setFormOpen(false), 1200);
       } catch (err) {
         console.error(err);
-        setMessage(err.response?.data?.message || '❌ Failed');
+        setMessage(err.response?.data?.message || "❌ Failed");
       } finally {
         setLoading(false);
-        setTimeout(() => setMessage(''), 2500);
+        setTimeout(() => setMessage(""), 2500);
       }
     },
   });
 
-  // Image handlers
-  const handleImageChange = e => {
+  // Handle new image selection
+  const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
 
-    const mapped = files.map(file => {
+    const mapped = files.map((file) => {
       file.preview = URL.createObjectURL(file);
       return file;
     });
 
-    setImageFiles(prev => [...prev, ...mapped]);
-    setImagePreviews(prev => [...prev, ...mapped.map(f => f.preview)]);
+    setImageFiles((prev) => [...prev, ...mapped]);
+    setImagePreviews((prev) => [...prev, ...mapped.map((f) => f.preview)]);
   };
 
-  const deleteImage = index => {
+  // Delete image (existing or new)
+  const deleteImage = (index) => {
     const preview = imagePreviews[index];
 
-    // old image
-    if (!preview.startsWith('blob:')) {
-      setExistingImages(prev => prev.filter((_, i) => i !== index));
+    // Existing image
+    if (!preview.startsWith("blob:")) {
+      setExistingImages((prev) => prev.filter((_, i) => i !== index));
     } else {
-      const idx = imageFiles.findIndex(f => f.preview === preview);
+      // New image
+      const idx = imageFiles.findIndex((f) => f.preview === preview);
       if (idx !== -1) {
         URL.revokeObjectURL(imageFiles[idx].preview);
-        setImageFiles(prev => prev.filter((_, i) => i !== idx));
+        setImageFiles((prev) => prev.filter((_, i) => i !== idx));
       }
     }
 
-    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -140,23 +144,21 @@ export default function ProductForm({
       className="bg-white p-6 rounded-xl shadow-lg max-w-4xl mx-auto"
     >
       <h2 className="text-2xl font-bold mb-6">
-        {isEditMode ? 'Edit Product' : 'Add New Product'}
+        {isEditMode ? "Edit Product" : "Add New Product"}
       </h2>
 
       <AnimatePresence>
         {message && (
-          <motion.p className="mb-4 font-semibold">
-            {message}
-          </motion.p>
+          <motion.p className="mb-4 font-semibold">{message}</motion.p>
         )}
       </AnimatePresence>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {['title', 'price', 'stock'].map(field => (
+        {["title", "price", "stock"].map((field) => (
           <div key={field}>
             <label className="block mb-1 capitalize">{field}</label>
             <input
-              type={field === 'price' || field === 'stock' ? 'number' : 'text'}
+              type={field === "price" || field === "stock" ? "number" : "text"}
               name={field}
               value={formik.values[field]}
               onChange={formik.handleChange}
@@ -165,7 +167,7 @@ export default function ProductForm({
           </div>
         ))}
 
-        {[{ name: 'category', list: categories }, { name: 'color', list: colors }].map(
+        {[{ name: "category", list: categories }, { name: "color", list: colors }].map(
           ({ name, list }) => (
             <div key={name}>
               <label className="block mb-1 capitalize">{name}</label>
@@ -176,7 +178,7 @@ export default function ProductForm({
                 className="w-full border px-3 py-2 rounded"
               >
                 <option value="">Select {name}</option>
-                {list.map(i => (
+                {list.map((i) => (
                   <option key={i._id} value={i._id}>
                     {i.name}
                   </option>
@@ -211,7 +213,7 @@ export default function ProductForm({
             <button
               type="button"
               onClick={() => deleteImage(i)}
-              className="absolute top-1 right-1 bg-red-500 text-white text-xs px-1"
+              className="absolute top-1 right-1 bg-red-500 text-white text-xs px-1 rounded"
             >
               ✕
             </button>
@@ -227,16 +229,14 @@ export default function ProductForm({
         >
           Cancel
         </button>
-        <button
-          type="submit"
-          className="bg-indigo-600 text-white px-6 py-2 rounded"
-        >
-          {loading ? 'Saving...' : 'Save'}
+        <button type="submit" className="bg-indigo-600 text-white px-6 py-2 rounded">
+          {loading ? "Saving..." : "Save"}
         </button>
       </div>
     </motion.form>
   );
 }
+
 
 
 
