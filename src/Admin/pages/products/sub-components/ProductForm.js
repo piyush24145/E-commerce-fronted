@@ -20,7 +20,7 @@ export default function ProductForm({
 
   const isEditMode = Boolean(editProduct);
 
-  // 🔹 Prefill data in edit mode
+  // Prefill data in edit mode
   useEffect(() => {
     if (isEditMode && editProduct?.images?.length) {
       setImagePreviews(editProduct.images);
@@ -57,18 +57,13 @@ export default function ProductForm({
           formData.append(key, value);
         });
 
-        // ✅ 2️⃣ append existing images ONLY in EDIT + ONLY if exists
+        // 2️⃣ append existing images if in edit mode
         if (isEditMode && existingImages.length > 0) {
-          formData.append(
-            'existingImages',
-            JSON.stringify(existingImages)
-          );
+          formData.append('existingImages', JSON.stringify(existingImages));
         }
 
         // 3️⃣ append new images
-        imageFiles.forEach(file => {
-          formData.append('images', file);
-        });
+        imageFiles.forEach(file => formData.append('images', file));
 
         const token = localStorage.getItem('token');
 
@@ -109,7 +104,7 @@ export default function ProductForm({
     },
   });
 
-  // 🔹 Image handlers
+  // Image handlers
   const handleImageChange = e => {
     const files = Array.from(e.target.files);
 
