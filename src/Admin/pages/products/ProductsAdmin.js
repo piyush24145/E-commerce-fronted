@@ -1,4 +1,3 @@
-// src/Admin/pages/products/ProductsAdmin.jsx
 import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { baseUrl } from '../../../environment';
@@ -16,7 +15,7 @@ export default function ProductsAdmin() {
   const [formOpen, setFormOpen] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
 
-  // Products fetch with filters (useCallback so effect lint is happy)
+  // Fetch products with filters
   const fetchProducts = useCallback(async () => {
     try {
       const params = new URLSearchParams();
@@ -69,7 +68,7 @@ export default function ProductsAdmin() {
     }
   };
 
-  // Create product
+  // Open form for creating product
   const handleCreate = () => {
     setEditProduct(null);
     setFormOpen(true);
@@ -84,7 +83,7 @@ export default function ProductsAdmin() {
       await axios.delete(`${baseUrl}/products/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      fetchProducts();
+      fetchProducts(); // refresh after deletion
     } catch (err) {
       console.error("❌ Failed to delete product:", err);
     }
@@ -95,7 +94,6 @@ export default function ProductsAdmin() {
     fetchCategories();
   }, []);
 
-  // fetchProducts whenever dependencies change (fetchProducts is stable via useCallback)
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
@@ -191,3 +189,4 @@ export default function ProductsAdmin() {
     </div>
   );
 }
+
