@@ -1,4 +1,3 @@
-// src/Admin/pages/products/sub-components/ProductForm.jsx
 import { useFormik } from 'formik';
 import { productSchema } from '../../../../yupSchema/productSchema';
 import axios from 'axios';
@@ -21,7 +20,7 @@ export default function ProductForm({
 
   const isEditMode = !!editProduct;
 
-  // Prefill edit data
+  // 🔹 Prefill edit data
   useEffect(() => {
     if (isEditMode && editProduct?.images?.length) {
       setImagePreviews(editProduct.images);
@@ -46,16 +45,20 @@ export default function ProductForm({
     enableReinitialize: true,
     validationSchema: productSchema,
 
+    // 🔥 UPDATED SUBMIT
     onSubmit: async (values, { resetForm }) => {
       setLoading(true);
       setMessage('');
 
       try {
         const formData = new FormData();
-        Object.entries(values).forEach(([key, value]) =>
-          formData.append(key, value)
-        );
 
+        // 1️⃣ append form values
+        Object.entries(values).forEach(([key, value]) => {
+          formData.append(key, value);
+        });
+
+        // 2️⃣ send existing images only in edit mode
         if (isEditMode) {
           formData.append(
             'existingImages',
@@ -63,11 +66,13 @@ export default function ProductForm({
           );
         }
 
-        imageFiles.forEach(file =>
-          formData.append('images', file)
-        );
+        // 3️⃣ append newly added images
+        imageFiles.forEach(file => {
+          formData.append('images', file);
+        });
 
         const token = localStorage.getItem('token');
+
         const url = isEditMode
           ? `${baseUrl}/products/${editProduct._id}`
           : `${baseUrl}/products/create`;
@@ -78,11 +83,11 @@ export default function ProductForm({
           data: formData,
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
           },
         });
 
-        await fetchProducts();
+        await fetchProducts(); // 🔥 refresh cards
+
         setMessage(
           isEditMode
             ? '✅ Product updated successfully!'
@@ -93,17 +98,20 @@ export default function ProductForm({
         setImageFiles([]);
         setImagePreviews([]);
         setExistingImages([]);
-        setTimeout(() => setFormOpen(false), 1500);
+
+        setTimeout(() => setFormOpen(false), 1200);
+
       } catch (err) {
+        console.error(err);
         setMessage(err.response?.data?.message || '❌ Failed');
       } finally {
         setLoading(false);
-        setTimeout(() => setMessage(''), 3000);
+        setTimeout(() => setMessage(''), 2500);
       }
     },
   });
 
-  // Image handlers
+  // 🔹 Image handlers
   const handleImageChange = e => {
     const files = Array.from(e.target.files);
     const mapped = files.map(f => {
@@ -117,6 +125,7 @@ export default function ProductForm({
   const deleteImage = index => {
     const preview = imagePreviews[index];
 
+    // old image (cloudinary)
     if (!preview.startsWith('blob:')) {
       setExistingImages(prev => prev.filter((_, i) => i !== index));
     } else {
@@ -126,6 +135,7 @@ export default function ProductForm({
         setImageFiles(prev => prev.filter((_, i) => i !== idx));
       }
     }
+
     setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
@@ -140,7 +150,9 @@ export default function ProductForm({
 
       <AnimatePresence>
         {message && (
-          <motion.p className="mb-4 font-semibold">{message}</motion.p>
+          <motion.p className="mb-4 font-semibold">
+            {message}
+          </motion.p>
         )}
       </AnimatePresence>
 
@@ -234,5 +246,6 @@ export default function ProductForm({
     </motion.form>
   );
 }
+
 
 
