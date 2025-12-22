@@ -18,9 +18,9 @@ export default function ProductForm({
   const [imagePreviews, setImagePreviews] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
 
-  const isEditMode = !!editProduct;
+  const isEditMode = Boolean(editProduct);
 
-  // 🔹 Prefill edit data
+  // 🔹 Prefill data in edit mode
   useEffect(() => {
     if (isEditMode && editProduct?.images?.length) {
       setImagePreviews(editProduct.images);
@@ -45,7 +45,6 @@ export default function ProductForm({
     enableReinitialize: true,
     validationSchema: productSchema,
 
-    // 🔥 UPDATED SUBMIT
     onSubmit: async (values, { resetForm }) => {
       setLoading(true);
       setMessage('');
@@ -58,15 +57,15 @@ export default function ProductForm({
           formData.append(key, value);
         });
 
-        // 2️⃣ send existing images only in edit mode
-        if (isEditMode) {
+        // ✅ 2️⃣ append existing images ONLY in EDIT + ONLY if exists
+        if (isEditMode && existingImages.length > 0) {
           formData.append(
             'existingImages',
             JSON.stringify(existingImages)
           );
         }
 
-        // 3️⃣ append newly added images
+        // 3️⃣ append new images
         imageFiles.forEach(file => {
           formData.append('images', file);
         });
@@ -86,7 +85,7 @@ export default function ProductForm({
           },
         });
 
-        await fetchProducts(); // 🔥 refresh cards
+        await fetchProducts();
 
         setMessage(
           isEditMode
@@ -100,7 +99,6 @@ export default function ProductForm({
         setExistingImages([]);
 
         setTimeout(() => setFormOpen(false), 1200);
-
       } catch (err) {
         console.error(err);
         setMessage(err.response?.data?.message || '❌ Failed');
@@ -114,10 +112,12 @@ export default function ProductForm({
   // 🔹 Image handlers
   const handleImageChange = e => {
     const files = Array.from(e.target.files);
-    const mapped = files.map(f => {
-      f.preview = URL.createObjectURL(f);
-      return f;
+
+    const mapped = files.map(file => {
+      file.preview = URL.createObjectURL(file);
+      return file;
     });
+
     setImageFiles(prev => [...prev, ...mapped]);
     setImagePreviews(prev => [...prev, ...mapped.map(f => f.preview)]);
   };
@@ -125,7 +125,7 @@ export default function ProductForm({
   const deleteImage = index => {
     const preview = imagePreviews[index];
 
-    // old image (cloudinary)
+    // old image
     if (!preview.startsWith('blob:')) {
       setExistingImages(prev => prev.filter((_, i) => i !== index));
     } else {
@@ -156,7 +156,6 @@ export default function ProductForm({
         )}
       </AnimatePresence>
 
-      {/* Inputs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {['title', 'price', 'stock'].map(field => (
           <div key={field}>
@@ -193,7 +192,6 @@ export default function ProductForm({
         )}
       </div>
 
-      {/* Textareas */}
       <textarea
         name="description"
         placeholder="Description"
@@ -209,7 +207,6 @@ export default function ProductForm({
         className="w-full border mt-3 p-2 rounded"
       />
 
-      {/* Images */}
       <input type="file" multiple onChange={handleImageChange} className="mt-4" />
 
       <div className="grid grid-cols-4 gap-3 mt-4">
@@ -227,7 +224,6 @@ export default function ProductForm({
         ))}
       </div>
 
-      {/* Buttons */}
       <div className="flex justify-between mt-6">
         <button
           type="button"
@@ -246,6 +242,7 @@ export default function ProductForm({
     </motion.form>
   );
 }
+
 
 
 
