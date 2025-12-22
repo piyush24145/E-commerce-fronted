@@ -15,16 +15,15 @@ export default function ProductForm({
 }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
-
-  const [imageFiles, setImageFiles] = useState([]);        // new uploaded files
-  const [imagePreviews, setImagePreviews] = useState([]);  // all previews
-  const [existingImages, setExistingImages] = useState([]); // already saved images
+  const [imageFiles, setImageFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
 
   const isEditMode = !!editProduct;
 
-  // ---------------- PREFILL DATA IN EDIT MODE ----------------
+  // Prefill edit data
   useEffect(() => {
-    if (isEditMode && editProduct?.images?.length > 0) {
+    if (isEditMode && editProduct?.images?.length) {
       setImagePreviews(editProduct.images);
       setExistingImages(editProduct.images);
     } else {
@@ -34,7 +33,6 @@ export default function ProductForm({
     setImageFiles([]);
   }, [editProduct, isEditMode]);
 
-  // ---------------- FORMIK ----------------
   const formik = useFormik({
     initialValues: {
       title: editProduct?.title || '',
@@ -54,15 +52,10 @@ export default function ProductForm({
 
       try {
         const formData = new FormData();
-        formData.append('title', values.title);
-        formData.append('description', values.description);
-        formData.append('short_des', values.short_des);
-        formData.append('price', values.price);
-        formData.append('stock', values.stock);
-        formData.append('category', values.category);
-        formData.append('color', values.color);
+        Object.entries(values).forEach(([key, value]) =>
+          formData.append(key, value)
+        );
 
-        // send existing images in edit mode
         if (isEditMode) {
           formData.append(
             'existingImages',
@@ -70,21 +63,17 @@ export default function ProductForm({
           );
         }
 
-        // send newly uploaded images
-        imageFiles.forEach(file => {
-          formData.append('images', file);
-        });
+        imageFiles.forEach(file =>
+          formData.append('images', file)
+        );
 
         const token = localStorage.getItem('token');
-
         const url = isEditMode
           ? `${baseUrl}/products/${editProduct._id}`
           : `${baseUrl}/products/create`;
 
-        const method = isEditMode ? 'put' : 'post';
-
         await axios({
-          method,
+          method: isEditMode ? 'put' : 'post',
           url,
           data: formData,
           headers: {
@@ -94,7 +83,6 @@ export default function ProductForm({
         });
 
         await fetchProducts();
-
         setMessage(
           isEditMode
             ? '✅ Product updated successfully!'
@@ -105,13 +93,9 @@ export default function ProductForm({
         setImageFiles([]);
         setImagePreviews([]);
         setExistingImages([]);
-
         setTimeout(() => setFormOpen(false), 1500);
-      } catch (error) {
-        console.error(error);
-        setMessage(
-          error.response?.data?.message || '❌ Failed to submit product.'
-        );
+      } catch (err) {
+        setMessage(err.response?.data?.message || '❌ Failed');
       } finally {
         setLoading(false);
         setTimeout(() => setMessage(''), 3000);
@@ -119,75 +103,35 @@ export default function ProductForm({
     },
   });
 
-  // ---------------- IMAGE UPLOAD ----------------
-  const handleImageChange = (e) => {
+  // Image handlers
+  const handleImageChange = e => {
     const files = Array.from(e.target.files);
-
-    const filesWithPreview = files.map(file => {
-      const preview = URL.createObjectURL(file);
-      file.preview = preview;
-      return file;
+    const mapped = files.map(f => {
+      f.preview = URL.createObjectURL(f);
+      return f;
     });
-
-    setImageFiles(prev => [...prev, ...filesWithPreview]);
-    setImagePreviews(prev => [
-      ...prev,
-      ...filesWithPreview.map(f => f.preview),
-    ]);
+    setImageFiles(prev => [...prev, ...mapped]);
+    setImagePreviews(prev => [...prev, ...mapped.map(f => f.preview)]);
   };
 
-  // ---------------- IMAGE DELETE ----------------
-  const deleteImage = (index) => {
+  const deleteImage = index => {
     const preview = imagePreviews[index];
 
-    // Existing image
     if (!preview.startsWith('blob:')) {
       setExistingImages(prev => prev.filter((_, i) => i !== index));
-    }
-    // Newly uploaded image
-    else {
+    } else {
       const idx = imageFiles.findIndex(f => f.preview === preview);
       if (idx !== -1) {
         URL.revokeObjectURL(imageFiles[idx].preview);
         setImageFiles(prev => prev.filter((_, i) => i !== idx));
       }
     }
-
     setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
-  // ---------------- DELETE PRODUCT ----------------
-  const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
-
-    try {
-      setLoading(true);
-      const token = localStorage.getItem('token');
-
-      await axios.delete(`${baseUrl}/products/${editProduct._id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      await fetchProducts();
-      setMessage('🗑️ Product deleted successfully!');
-      setTimeout(() => setFormOpen(false), 1500);
-    } catch (error) {
-      console.error(error);
-      setMessage('❌ Failed to delete product.');
-    } finally {
-      setLoading(false);
-      setTimeout(() => setMessage(''), 3000);
-    }
-  };
-
-  // ---------------- UI ----------------
   return (
     <motion.form
       onSubmit={formik.handleSubmit}
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.35 }}
       className="bg-white p-6 rounded-xl shadow-lg max-w-4xl mx-auto"
     >
       <h2 className="text-2xl font-bold mb-6">
@@ -196,49 +140,99 @@ export default function ProductForm({
 
       <AnimatePresence>
         {message && (
-          <motion.p
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-white border shadow px-4 py-2 rounded-md font-semibold"
-          >
-            {message}
-          </motion.p>
+          <motion.p className="mb-4 font-semibold">{message}</motion.p>
         )}
       </AnimatePresence>
 
-      {/* FORM CONTENT (unchanged UI) */}
-      {/* Your inputs, selects, textareas & image grid remain SAME */}
+      {/* Inputs */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {['title', 'price', 'stock'].map(field => (
+          <div key={field}>
+            <label className="block mb-1 capitalize">{field}</label>
+            <input
+              type={field === 'price' || field === 'stock' ? 'number' : 'text'}
+              name={field}
+              value={formik.values[field]}
+              onChange={formik.handleChange}
+              className="w-full border px-3 py-2 rounded"
+            />
+          </div>
+        ))}
 
-      <div className="flex justify-between pt-6">
+        {[{ name: 'category', list: categories }, { name: 'color', list: colors }].map(
+          ({ name, list }) => (
+            <div key={name}>
+              <label className="block mb-1 capitalize">{name}</label>
+              <select
+                name={name}
+                value={formik.values[name]}
+                onChange={formik.handleChange}
+                className="w-full border px-3 py-2 rounded"
+              >
+                <option value="">Select {name}</option>
+                {list.map(i => (
+                  <option key={i._id} value={i._id}>
+                    {i.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )
+        )}
+      </div>
+
+      {/* Textareas */}
+      <textarea
+        name="description"
+        placeholder="Description"
+        value={formik.values.description}
+        onChange={formik.handleChange}
+        className="w-full border mt-4 p-2 rounded"
+      />
+      <textarea
+        name="short_des"
+        placeholder="Short description"
+        value={formik.values.short_des}
+        onChange={formik.handleChange}
+        className="w-full border mt-3 p-2 rounded"
+      />
+
+      {/* Images */}
+      <input type="file" multiple onChange={handleImageChange} className="mt-4" />
+
+      <div className="grid grid-cols-4 gap-3 mt-4">
+        {imagePreviews.map((src, i) => (
+          <div key={i} className="relative">
+            <img src={src} className="h-24 w-full object-cover rounded" />
+            <button
+              type="button"
+              onClick={() => deleteImage(i)}
+              className="absolute top-1 right-1 bg-red-500 text-white text-xs px-1"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Buttons */}
+      <div className="flex justify-between mt-6">
         <button
           type="button"
           onClick={() => setFormOpen(false)}
-          className="px-4 py-2 border rounded-md"
+          className="border px-4 py-2 rounded"
         >
           Cancel
         </button>
-
-        <div className="flex gap-3">
-          {isEditMode && (
-            <button
-              type="button"
-              onClick={handleDelete}
-              className="px-4 py-2 bg-red-500 text-white rounded-md"
-            >
-              Delete
-            </button>
-          )}
-          <button
-            type="submit"
-            disabled={loading}
-            className="px-5 py-2 bg-indigo-600 text-white rounded-md"
-          >
-            {loading ? 'Saving...' : isEditMode ? 'Update' : 'Save'}
-          </button>
-        </div>
+        <button
+          type="submit"
+          className="bg-indigo-600 text-white px-6 py-2 rounded"
+        >
+          {loading ? 'Saving...' : 'Save'}
+        </button>
       </div>
     </motion.form>
   );
 }
+
 
