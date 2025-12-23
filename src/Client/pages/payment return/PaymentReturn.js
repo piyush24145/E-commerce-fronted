@@ -20,16 +20,19 @@ export default function PaymentReturn() {
       .get(`${baseUrl}/payment/session-status?session_id=${sessionId}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       })
-      .then((res) => {
-        const { status, customer_email } = res.data;
-        setStatus(status);
-        setEmail(customer_email);
+    .then((res) => {
+  console.log("Stripe response:", res.data);
 
-        if (status === "paid") {
-          dispatch(setCartItems([]));
-          dispatch(setCartCount(0));
-        }
-      })
+  const paymentStatus = res.data.status || res.data.payment_status;
+  setStatus(paymentStatus);
+  setEmail(res.data.customer_email || "");
+
+  if (paymentStatus === "paid" || paymentStatus === "complete") {
+    dispatch(setCartItems([]));
+    dispatch(setCartCount(0));
+  }
+});
+
       .catch((err) => {
         console.error("❌ Error fetching session status:", err);
         setStatus("failed");
