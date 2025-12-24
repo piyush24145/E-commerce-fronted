@@ -4,7 +4,10 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { baseUrl } from "../../../environment";
 
-const stripePromise = loadStripe("pk_test_51RcPdGGd8yfmOEEK0l9c8eBdLAQCkERmaTRWsk3t7lZAp49AcyYmyXmDld9pKp56eNIQGGJdFaeONkWnOxMHOqSy00c9Ji2AfQ"); // Replace with your real key
+// ✅ Stripe key ENV se lo (BEST PRACTICE)
+const stripePromise = loadStripe(
+  import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
+);
 
 export default function Checkout() {
   const [clientSecret, setClientSecret] = useState(null);
@@ -12,13 +15,21 @@ export default function Checkout() {
   useEffect(() => {
     const fetchClientSecret = async () => {
       try {
-        const res = await axios.post(`${baseUrl}/payment/session-create`, {}, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-setClientSecret(res.data.clientSecret);
-localStorage.setItem("stripe_session_id", res.data.sessionId);
+        // ✅ safety cleanup
+        localStorage.removeItem("stripe_session_id");
+
+        const res = await axios.post(
+          `${baseUrl}/payment/session-create`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        setClientSecret(res.data.clientSecret);
+        localStorage.setItem("stripe_session_id", res.data.sessionId);
 
       } catch (err) {
         console.error("❌ Error fetching clientSecret:", err);
@@ -31,7 +42,10 @@ localStorage.setItem("stripe_session_id", res.data.sessionId);
   return (
     <div className="min-h-screen p-6 flex items-center justify-center">
       {clientSecret ? (
-        <EmbeddedCheckoutProvider stripe={stripePromise} options={{ clientSecret }}>
+        <EmbeddedCheckoutProvider
+          stripe={stripePromise}
+          options={{ clientSecret }}
+        >
           <EmbeddedCheckout />
         </EmbeddedCheckoutProvider>
       ) : (
@@ -40,3 +54,4 @@ localStorage.setItem("stripe_session_id", res.data.sessionId);
     </div>
   );
 }
+
