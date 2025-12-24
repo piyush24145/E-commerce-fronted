@@ -11,7 +11,8 @@ export default function PaymentReturn() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const sessionId = new URLSearchParams(window.location.search).get("session_id");
+   const sessionId = localStorage.getItem("stripe_session_id");
+
     if (!sessionId) return setStatus("failed");
 
     const token = localStorage.getItem("token");
