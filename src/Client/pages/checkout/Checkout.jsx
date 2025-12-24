@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 import { baseUrl } from "../../../environment";
 
 // ✅ CRA env usage
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_KEY);
+const stripePromise = loadStripe(
+  process.env.REACT_APP_STRIPE_KEY
+);
 
 export default function Checkout() {
   const [clientSecret, setClientSecret] = useState(null);
@@ -13,11 +15,11 @@ export default function Checkout() {
   useEffect(() => {
     const fetchClientSecret = async () => {
       try {
-        // cleanup previous session
+        // safety cleanup
         localStorage.removeItem("stripe_session_id");
 
         const res = await axios.post(
-          `${baseUrl}/payment/create-checkout-session`,
+          `${baseUrl}/payment/session-create`,
           {},
           {
             headers: {
@@ -27,8 +29,6 @@ export default function Checkout() {
         );
 
         setClientSecret(res.data.clientSecret);
-
-        // ✅ save sessionId for PaymentReturn page
         localStorage.setItem("stripe_session_id", res.data.sessionId);
 
       } catch (err) {
@@ -42,7 +42,10 @@ export default function Checkout() {
   return (
     <div className="min-h-screen p-6 flex items-center justify-center">
       {clientSecret ? (
-        <EmbeddedCheckoutProvider stripe={stripePromise} options={{ clientSecret }}>
+        <EmbeddedCheckoutProvider
+          stripe={stripePromise}
+          options={{ clientSecret }}
+        >
           <EmbeddedCheckout />
         </EmbeddedCheckoutProvider>
       ) : (
