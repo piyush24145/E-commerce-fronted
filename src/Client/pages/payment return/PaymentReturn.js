@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
 import { baseUrl } from "../../../environment";
 import { useDispatch } from "react-redux";
 import { setCartCount, setCartItems } from "../../../state/cartSlice";
@@ -12,7 +11,6 @@ export default function PaymentReturn() {
 
   useEffect(() => {
     const sessionId = localStorage.getItem("stripe_session_id");
-
     if (!sessionId) {
       setStatus("failed");
       return;
@@ -30,19 +28,16 @@ export default function PaymentReturn() {
         );
 
         const { status, customer_email } = res.data;
-
         setStatus(status);
         setEmail(customer_email || "");
 
         if (status === "paid") {
           dispatch(setCartItems([]));
           dispatch(setCartCount(0));
-
-          // ✅ important cleanup
           localStorage.removeItem("stripe_session_id");
         }
       } catch (error) {
-        console.error("❌ Payment verification failed:", error);
+        console.error("Payment verification failed:", error);
         setStatus("failed");
       }
     };
@@ -50,23 +45,15 @@ export default function PaymentReturn() {
     verifyPayment();
   }, [dispatch]);
 
-  // ================= UI =================
-
   if (status === "loading") {
-    return (
-      <div className="h-screen flex items-center justify-center text-lg font-medium">
-        Verifying your payment...
-      </div>
-    );
+    return <div className="h-screen flex items-center justify-center text-lg font-medium">Verifying your payment...</div>;
   }
 
   if (status === "failed") {
     return (
       <div className="h-screen flex items-center justify-center flex-col gap-4">
         <h2 className="text-red-600 text-xl font-semibold">❌ Payment Failed</h2>
-        <a href="/cart" className="text-blue-600 underline">
-          Try Again
-        </a>
+        <a href="/cart" className="text-blue-600 underline">Try Again</a>
       </div>
     );
   }
@@ -74,21 +61,10 @@ export default function PaymentReturn() {
   if (status === "paid") {
     return (
       <div className="h-screen flex items-center justify-center flex-col gap-4">
-        <h2 className="text-green-600 text-xl font-semibold">
-          ✅ Payment Successful
-        </h2>
+        <h2 className="text-green-600 text-xl font-semibold">✅ Payment Successful</h2>
         <p>Order placed successfully. Thank you!</p>
-        {email && (
-          <p>
-            Confirmation sent to <strong>{email}</strong>
-          </p>
-        )}
-        <a
-          href="/orders"
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-        >
-          View Orders
-        </a>
+        {email && <p>Confirmation sent to <strong>{email}</strong></p>}
+        <a href="/orders" className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">View Orders</a>
       </div>
     );
   }
