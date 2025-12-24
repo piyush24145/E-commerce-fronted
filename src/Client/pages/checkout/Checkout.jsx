@@ -4,9 +4,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { baseUrl } from "../../../environment";
 
-// ✅ Stripe key ENV se lo (BEST PRACTICE)
+// ✅ CRA env usage
 const stripePromise = loadStripe(
-  import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
+  process.env.REACT_APP_STRIPE_KEY
 );
 
 export default function Checkout() {
@@ -15,7 +15,7 @@ export default function Checkout() {
   useEffect(() => {
     const fetchClientSecret = async () => {
       try {
-        // ✅ safety cleanup
+        // safety cleanup
         localStorage.removeItem("stripe_session_id");
 
         const res = await axios.post(
@@ -32,7 +32,7 @@ export default function Checkout() {
         localStorage.setItem("stripe_session_id", res.data.sessionId);
 
       } catch (err) {
-        console.error("❌ Error fetching clientSecret:", err);
+        console.error("Stripe error:", err);
       }
     };
 
@@ -54,4 +54,5 @@ export default function Checkout() {
     </div>
   );
 }
+
 
