@@ -17,8 +17,9 @@ export default function Checkout() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
+setClientSecret(res.data.clientSecret);
+localStorage.setItem("stripe_session_id", res.data.sessionId);
 
-        setClientSecret(res.data.clientSecret);
       } catch (err) {
         console.error("❌ Error fetching clientSecret:", err);
       }
