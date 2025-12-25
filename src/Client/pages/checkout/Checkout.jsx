@@ -13,28 +13,38 @@ export default function Checkout() {
   const [clientSecret, setClientSecret] = useState(null);
 
   useEffect(() => {
-    const fetchClientSecret = async () => {
-      try {
-        // safety cleanup
-        localStorage.removeItem("stripe_session_id");
+   const fetchClientSecret = async () => {
+  try {
+    const token = localStorage.getItem("token");
 
-        const res = await axios.post(
-          `${baseUrl}/payment/session-create`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+    if (!token) {
+      console.error("No auth token found");
+      return;
+    }
 
-        setClientSecret(res.data.clientSecret);
-        localStorage.setItem("stripe_session_id", res.data.sessionId);
+    localStorage.removeItem("stripe_session_id");
 
-      } catch (err) {
-        console.error("Stripe error:", err);
+    const res = await axios.post(
+      `${baseUrl}/payment/session-create`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    };
+    );
+
+    setClientSecret(res.data.clientSecret);
+    localStorage.setItem("stripe_session_id", res.data.sessionId);
+
+  } catch (err) {
+    console.error(
+      "Stripe checkout error:",
+      err?.response?.data || err.message
+    );
+  }
+};
+
 
     fetchClientSecret();
   }, []);
