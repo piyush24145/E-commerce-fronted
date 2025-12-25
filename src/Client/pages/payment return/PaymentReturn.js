@@ -32,35 +32,69 @@ const PaymentReturn = () => {
       setStatus("failed");
     }
   };
+return (
+  <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 text-center">
 
-  return (
-    <div className="flex items-center justify-center h-screen text-lg">
-      {status === "loading" && <h1>⏳ Processing payment...</h1>}
+      {status === "loading" && (
+        <>
+          <div className="animate-spin h-10 w-10 mx-auto mb-4 rounded-full border-4 border-blue-500 border-t-transparent"></div>
+          <h1 className="text-lg font-semibold text-gray-700">
+            Processing your payment
+          </h1>
+          <p className="text-sm text-gray-500 mt-2">
+            Please do not refresh the page
+          </p>
+        </>
+      )}
 
       {status === "success" && (
-        <div className="text-center space-y-4">
-          <h1 className="text-green-600 font-semibold">
-            ✅ Order placed successfully
+        <>
+          <div className="h-14 w-14 mx-auto flex items-center justify-center rounded-full bg-green-100 mb-4">
+            <span className="text-green-600 text-2xl">✓</span>
+          </div>
+
+          <h1 className="text-xl font-semibold text-gray-800">
+            Order placed successfully
           </h1>
-          <a href="/orders" className="bg-blue-600 text-white px-6 py-2 rounded">
+          <p className="text-sm text-gray-500 mt-2">
+            Thank you for your purchase. Your order is being processed.
+          </p>
+
+          <a
+            href="/orders"
+            className="inline-block mt-6 bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-2 rounded-lg text-sm font-medium"
+          >
             View Orders
           </a>
-        </div>
+        </>
       )}
 
       {status === "failed" && (
-        <div className="text-center space-y-4">
-          <h1 className="text-red-600 font-semibold">
-            ❌ Payment failed
+        <>
+          <div className="h-14 w-14 mx-auto flex items-center justify-center rounded-full bg-red-100 mb-4">
+            <span className="text-red-600 text-2xl">✕</span>
+          </div>
+
+          <h1 className="text-xl font-semibold text-gray-800">
+            Payment failed
           </h1>
-          <a href="/cart" className="text-blue-600 underline">
+          <p className="text-sm text-gray-500 mt-2">
+            Something went wrong while processing your payment.
+          </p>
+
+          <a
+            href="/cart"
+            className="inline-block mt-6 text-blue-600 hover:underline text-sm font-medium"
+          >
             Go back to cart
           </a>
-        </div>
+        </>
       )}
     </div>
-  );
-};
+  </div>
+);
+
 
 export default PaymentReturn;
 
