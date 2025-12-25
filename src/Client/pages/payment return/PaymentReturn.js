@@ -6,7 +6,6 @@ import { baseUrl } from "../../../environment";
 const PaymentReturn = () => {
   const [status, setStatus] = useState("loading");
 
-  // 🔐 token from redux OR localStorage (Stripe redirect safety)
   const reduxToken = useSelector((state) => state.auth.token);
   const token = reduxToken || localStorage.getItem("token");
 
@@ -24,12 +23,7 @@ const PaymentReturn = () => {
   const verifyPayment = async (sessionId) => {
     try {
       const res = await axios.get(
-        `${baseUrl}/payment/verify?session_id=${sessionId}`,
-        {
-          headers: token
-            ? { Authorization: `Bearer ${token}` }
-            : {},
-        }
+        `${baseUrl}/payment/verify?session_id=${sessionId}`
       );
 
       if (res.data?.success) {
@@ -64,10 +58,7 @@ const PaymentReturn = () => {
           <h1 className="text-red-600 font-semibold">
             ❌ Payment failed
           </h1>
-          <a
-            href="/cart"
-            className="inline-block text-blue-600 underline"
-          >
+          <a href="/cart" className="text-blue-600 underline">
             Go back to cart
           </a>
         </div>
