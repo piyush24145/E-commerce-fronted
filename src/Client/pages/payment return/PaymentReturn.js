@@ -32,69 +32,71 @@ const PaymentReturn = () => {
       setStatus("failed");
     }
   };
-return (
-  <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-    <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 text-center">
 
-      {status === "loading" && (
-        <>
-          <div className="animate-spin h-10 w-10 mx-auto mb-4 rounded-full border-4 border-blue-500 border-t-transparent"></div>
-          <h1 className="text-lg font-semibold text-gray-700">
-            Processing your payment
-          </h1>
-          <p className="text-sm text-gray-500 mt-2">
-            Please do not refresh the page
-          </p>
-        </>
-      )}
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 text-center">
 
-      {status === "success" && (
-        <>
-          <div className="h-14 w-14 mx-auto flex items-center justify-center rounded-full bg-green-100 mb-4">
-            <span className="text-green-600 text-2xl">✓</span>
-          </div>
+        {status === "loading" && (
+          <>
+            <div className="animate-spin h-10 w-10 mx-auto mb-4 rounded-full border-4 border-blue-500 border-t-transparent"></div>
+            <h1 className="text-lg font-semibold text-gray-700">
+              Processing your payment
+            </h1>
+            <p className="text-sm text-gray-500 mt-2">
+              Please do not refresh the page
+            </p>
+          </>
+        )}
 
-          <h1 className="text-xl font-semibold text-gray-800">
-            Order placed successfully
-          </h1>
-          <p className="text-sm text-gray-500 mt-2">
-            Thank you for your purchase. Your order is being processed.
-          </p>
+        {status === "success" && (
+          <>
+            <div className="h-14 w-14 mx-auto flex items-center justify-center rounded-full bg-green-100 mb-4">
+              <span className="text-green-600 text-2xl">✓</span>
+            </div>
 
-          <a
-            href="/orders"
-            className="inline-block mt-6 bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-2 rounded-lg text-sm font-medium"
-          >
-            View Orders
-          </a>
-        </>
-      )}
+            <h1 className="text-xl font-semibold text-gray-800">
+              Order placed successfully
+            </h1>
+            <p className="text-sm text-gray-500 mt-2">
+              Your payment was successful and your order is confirmed.
+            </p>
 
-      {status === "failed" && (
-        <>
-          <div className="h-14 w-14 mx-auto flex items-center justify-center rounded-full bg-red-100 mb-4">
-            <span className="text-red-600 text-2xl">✕</span>
-          </div>
+            <a
+              href="/orders"
+              className="inline-block mt-6 bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-2 rounded-lg text-sm font-medium"
+            >
+              View Orders
+            </a>
+          </>
+        )}
 
-          <h1 className="text-xl font-semibold text-gray-800">
-            Payment failed
-          </h1>
-          <p className="text-sm text-gray-500 mt-2">
-            Something went wrong while processing your payment.
-          </p>
+        {status === "failed" && (
+          <>
+            <div className="h-14 w-14 mx-auto flex items-center justify-center rounded-full bg-red-100 mb-4">
+              <span className="text-red-600 text-2xl">✕</span>
+            </div>
 
-          <a
-            href="/cart"
-            className="inline-block mt-6 text-blue-600 hover:underline text-sm font-medium"
-          >
-            Go back to cart
-          </a>
-        </>
-      )}
+            <h1 className="text-xl font-semibold text-gray-800">
+              Payment failed
+            </h1>
+            <p className="text-sm text-gray-500 mt-2">
+              Something went wrong. Please try again.
+            </p>
+
+            <a
+              href="/cart"
+              className="inline-block mt-6 text-blue-600 hover:underline text-sm font-medium"
+            >
+              Go back to cart
+            </a>
+          </>
+        )}
+
+      </div>
     </div>
-  </div>
-);
-
+  );
+};
 
 export default PaymentReturn;
 
