@@ -1,5 +1,8 @@
 import React,{ useState} from "react";
 import {NavLink,Outlet} from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../../state/authSlice"; 
 import {
     HomeIcon,
     ShoppingCartIcon,
@@ -22,6 +25,15 @@ const sidebarItems = [
 ];
 const AdminModule= () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+
+  dispatch(logout());
+
+  navigate("/login");
+};
+
   return (
     <div className="flex min-h-screen ">
 <div
@@ -88,9 +100,13 @@ const AdminModule= () => {
       <h1 className="text-lg font-semibold text-gray-700">Admin Panel</h1>
       <div className="flex items-center space-x-4">
        
-        <button className="text-sm font-medium text-gray-500 hover:text-gray-700">
-          Logout
-        </button>
+      <button
+  onClick={handleLogout}
+  className="text-sm font-medium text-gray-500 hover:text-gray-700"
+>
+  Logout
+</button>
+
       </div>
     </div>
   </header>
