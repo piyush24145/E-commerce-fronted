@@ -1,13 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useSelector } from "react-redux";
 import { baseUrl } from "../../../environment";
 
 const PaymentReturn = () => {
   const [status, setStatus] = useState("loading");
-
-  const reduxToken = useSelector((state) => state.auth.token);
-  const token = reduxToken || localStorage.getItem("token");
 
   useEffect(() => {
     const sessionId = new URLSearchParams(window.location.search).get("session_id");
@@ -40,19 +36,18 @@ const PaymentReturn = () => {
   return (
     <div className="flex items-center justify-center h-screen text-lg">
       {status === "loading" && <h1>⏳ Processing payment...</h1>}
+
       {status === "success" && (
         <div className="text-center space-y-4">
           <h1 className="text-green-600 font-semibold">
             ✅ Order placed successfully
           </h1>
-          <a
-            href="/orders"
-            className="inline-block bg-blue-600 text-white px-6 py-2 rounded"
-          >
+          <a href="/orders" className="bg-blue-600 text-white px-6 py-2 rounded">
             View Orders
           </a>
         </div>
       )}
+
       {status === "failed" && (
         <div className="text-center space-y-4">
           <h1 className="text-red-600 font-semibold">
