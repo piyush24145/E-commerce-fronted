@@ -23,8 +23,13 @@ const sidebarItems = [
    { name: "category", icon: TagIcon, path: "/admin/category" },
      { name: "Colors", icon: CogIcon, path: "/admin/color" },
 ];
-const AdminModule= () => {
+
+const AdminModule = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
     const handleLogout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("user");
